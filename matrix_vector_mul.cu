@@ -33,7 +33,10 @@ int main(int argc, char **argv) {
     cudaMemcpy(a_gpu, a, matrix_size * matrix_size * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(v_gpu, v, matrix_size * sizeof(float), cudaMemcpyHostToDevice);
 
+    clock_t st, en;
+    st = clock();
     matrix_vector_product<<<1, matrix_size>>>(a_gpu, v_gpu, res_gpu, matrix_size);
+    en = clock();
 
     cudaMemcpy(res, res_gpu, matrix_size * sizeof(float), cudaMemcpyDeviceToHost);
 
@@ -41,11 +44,14 @@ int main(int argc, char **argv) {
         printf("%.2f\n", res[i]);
     }
     
-    // printf("Time taken by CPU: %ld\n", en - st);
+    printf("Time taken by GPU: %f seconds\n", (double)(en - st) / CLOCKS_PER_SEC);
 
-    // free(a);
-    // free(v);
-    // free(res);
+    free(a);
+    free(v);
+    free(res);
+    cudaFree(a_gpu);
+    cudaFree(v_gpu);
+    cudaFree(res_gpu);
 
     return 0;
 }
