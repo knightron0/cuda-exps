@@ -38,12 +38,15 @@ int main(int argc, char **argv) {
         }
     }
     
+    clock_t st, en;
+    st = clock();
     matmul(a, b, res, n, m, k);
+    en = clock();
     
     printf("a: \n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            printf("%f ", a[i * m + j]);
+            printf("%.2f ", a[i * m + j]);
         }
         printf("\n");
     }
@@ -51,7 +54,7 @@ int main(int argc, char **argv) {
     
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < k; j++) {
-            printf("%f ", b[i * k + j]);
+            printf("%.2f ", b[i * k + j]);
         }
         printf("\n");
     }
@@ -59,11 +62,17 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < k; j++) {
-            printf("%f ", res[i * k + j]);
+            printf("%.2f ", res[i * k + j]);
         }
         printf("\n");
     }
     printf("\n");
+
+    printf("Time taken by CPU: %f seconds\n", (double)(en - st) / CLOCKS_PER_SEC);
+
+    free(a);
+    free(b);
+    free(res);
 
     return 0;
 }

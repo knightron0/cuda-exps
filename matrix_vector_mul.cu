@@ -4,13 +4,14 @@
 
 __global__ void matrix_vector_product(float *a, float *v, float *res, int matrix_size) {
     int index = (blockDim.x * blockIdx.x) + threadIdx.x;
-    index = threadIdx.x;
+    // index = threadIdx.x;
     if (index < matrix_size) {
         float sum = 0.0;
         for (int j = 0; j < matrix_size; j++) {
             sum += a[index * matrix_size + j] * v[j];
         } 
         res[index] = sum;
+        // printf("%d\n", index);
     }
 }
 
@@ -37,12 +38,13 @@ int main(int argc, char **argv) {
     cudaMemcpy(a_gpu, a, matrix_size * matrix_size * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(v_gpu, v, matrix_size * sizeof(float), cudaMemcpyHostToDevice);
 
-    // dim3 grid_size(10);
-    // dim3 block_size((matrix_size / 10) + 1);
-    printf("hllo\n");
+    dim3 grid_size(10);
+    dim3 block_size((matrix_size / 10) + 1);
+    // printf("grid size: %d %d\n", grid_size.x, grid_size.y);
+    // printf("block size: %d %d\n", block_size.x, block_size.y);
     clock_t st, en;
     st = clock();
-    matrix_vector_product<<<1, matrix_size>>>(a_gpu, v_gpu, res_gpu, matrix_size);
+    matrix_vector_product<<<grid_size, block_size>>>(a_gpu, v_gpu, res_gpu, matrix_size);
     en = clock();
 
     cudaMemcpy(res, res_gpu, matrix_size * sizeof(float), cudaMemcpyDeviceToHost);
