@@ -3,11 +3,15 @@
 #include <time.h>
 
 __global__ void matrix_vector_product(float *a, float *v, float *res, int matrix_size) {
-    float sum = 0.0;
-    for (int j = 0; j < blockDim.x; j++) {
-        sum += a[threadIdx.x * blockDim.x + j] * v[j];
-    } 
-    res[threadIdx.x] = sum;
+    int index = (blockDim.x * blockIdx.x) + threadIdx.x;
+    index = threadIdx.x;
+    if (index < matrix_size) {
+        float sum = 0.0;
+        for (int j = 0; j < matrix_size; j++) {
+            sum += a[index * matrix_size + j] * v[j];
+        } 
+        res[index] = sum;
+    }
 }
 
 int main(int argc, char **argv) {
@@ -33,6 +37,9 @@ int main(int argc, char **argv) {
     cudaMemcpy(a_gpu, a, matrix_size * matrix_size * sizeof(float), cudaMemcpyHostToDevice);
     cudaMemcpy(v_gpu, v, matrix_size * sizeof(float), cudaMemcpyHostToDevice);
 
+    // dim3 grid_size(10);
+    // dim3 block_size((matrix_size / 10) + 1);
+    printf("hllo\n");
     clock_t st, en;
     st = clock();
     matrix_vector_product<<<1, matrix_size>>>(a_gpu, v_gpu, res_gpu, matrix_size);
